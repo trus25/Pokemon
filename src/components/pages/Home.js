@@ -1,49 +1,58 @@
 import React, {useState, useEffect } from 'react'
 import { Row, Col } from 'react-simple-flex-grid'
 import './Home.css'
-import Search from '../Search.js'
-import { Card } from '../Card.js'
+import Search from '../external/Search.js'
+import { Card } from '../external/Card.js'
 import { Link } from 'react-router-dom'
+import Loading from '../external/Loading'
+import '../external/Paginate.css'
+import ReactPaginate from 'react-paginate';
 function Home() {
     // const [pokemon, setPokemon] = useState([])
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState({});
-    const [details, setDetails] = useState([]);
-    const itemQuery = `query pokemons($limit: Int, $offset: Int) {
-        pokemons(limit: $limit, offset: $offset) {
-          count
-          next
-          previous
-          status
-          message
-          results {
-            id
-            url
-            name
-            image
-          }
-        }
-      }`;
-      
-    const itemqueryVariables = {
-        limit: 100,
-        offset: 0,
-    };
 
-    const detailQuery =  `query pokemon($name: String!) {
-      pokemon(name: $name) {
-        name
-        types {
-          type {
-            name
-          }
-        }
-      }
-    }`;
+    const [offset, setOffset] = useState(0);
+    const [data, setData] = useState([]);
+    const [perPage] = useState(12);
+    const [pageCount, setPageCount] = useState(0);
+    const [mypokemon] = useState(()=> JSON.parse(localStorage.getItem("mypokemon")));
 
     useEffect(() => {
-        const fetchPokemon = () =>{
+        setIsLoaded(false);
+        const itemQuery = `query pokemons($limit: Int, $offset: Int) {
+          pokemons(limit: $limit, offset: $offset) {
+            count
+            next
+            previous
+            status
+            message
+            results {
+              id
+              url
+              name
+              image
+            }
+          }
+        }`;
+          
+        const itemqueryVariables = {
+            limit: perPage,
+            offset: offset,
+        };
+  
+        const detailQuery =  `query pokemon($name: String!) {
+          pokemon(name: $name) {
+            name
+            types {
+              type {
+                name
+              }
+            }
+          }
+        }`;
+        const fetchPokemon = async() =>{
           fetch('https://graphql-pokeapi.vercel.app/api/graphql', {
             credentials: 'omit',
             headers: { 'Content-Type': 'application/json' },
@@ -55,28 +64,25 @@ function Home() {
           })
           .then(res => res.json())
           .then(result => {
-            Promise.all(result.data.pokemons.results.map(x=>fetch('https://graphql-pokeapi.vercel.app/api/graphql', {
-              credentials: 'omit',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                query: detailQuery,
-                variables: {
-                  name:x.name
-                },
-              }),
-              method: 'POST'
-             })
-             .then((res) => res.json())
-             .then((res) =>{
-               return res
-             }))).then((values)=>{
-                console.log(values)
-                result.data.pokemons.results.forEach(x => {
-                  x.types = values.find(res=>res.data.pokemon.name===x.name).data.pokemon.types;
-                });
-            })
-              setItems(result);
-              setIsLoaded(true);
+              Promise.all(result.data.pokemons.results.map(x=>fetch('https://graphql-pokeapi.vercel.app/api/graphql', {
+                credentials: 'omit',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  query: detailQuery,
+                  variables: {
+                    name:x.name
+                  },
+                }),
+                method: 'POST'
+              })
+              .then((res) => res.json()))).then((values)=>{
+                  result.data.pokemons.results.forEach(x => {
+                    x.types = values.find(res=>res.data.pokemon.name===x.name).data.pokemon.types;
+                  });
+                  setItems(result);
+                  setIsLoaded(true);
+                  setPageCount(Math.ceil(result.data.pokemons.count / perPage))
+              })
             },
             (error) => {
               console.log(error)
@@ -85,20 +91,14 @@ function Home() {
             }
           )
         }
-        fetchPokemon()
-      }, [])
-      // setter
-        localStorage.setItem('myData', items);
-        
-        // getter
-        localStorage.getItem('myData');
-        
-        // remove
-        localStorage.removeItem('myData');
-        
-        // remove all
-        localStorage.clear();
-        console.log(items)
+        fetchPokemon();
+      }, [offset])
+
+    const handlePageClick = (e) => {
+      const selectedPage = e.selected;
+      setOffset(Math.ceil(selectedPage * perPage))
+    };
+    console.log(items)
     return (
         <>
             <Search />
@@ -107,18 +107,34 @@ function Home() {
                     <>
                       <Row gutter={20}>
                         {items.data.pokemons.results.map((dt,index)=>(
-                            <Col xs={6} sm={4} md={3} lg={2} style={{"marginTop": "20px"}} key={index}>
-                                <Link to="/pokemon">
-                                    <Card imageUrl={dt.image} title={dt.name.charAt(0).toUpperCase() + dt.name.slice(1)}>
+                            <Col xs={6} lg={3} style={{"marginTop": "20px"}} key={index}>
+                                <Link to={`/pokemon/${dt.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <Card imageUrl={dt.image} title={dt.name.charAt(0).toUpperCase() + dt.name.slice(1)} type={dt.types[0].type.name} body={
+                                      <span>Owned: {}</span>
+                                    }>
                                     </Card>
                                 </Link>
                             </Col>
                         ))}
                       </Row>
                     </> :
-                    <div></div>
+                    <Loading/>
                 }
-                
+                <div style={{width:'100%', textAlign:'center'}}>
+                  <ReactPaginate
+                    previousLabel={"prev"}
+                    nextLabel={"next"}
+                    breakLabel={"..."}
+                    breakClassName={"break-me"}
+                    pageCount={pageCount}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={handlePageClick}
+                    containerClassName={"pagination"}
+                    subContainerClassName={"pages pagination"}
+                    activeClassName={"active"}
+                    />
+                </div>
             </div>
         </>
     )
