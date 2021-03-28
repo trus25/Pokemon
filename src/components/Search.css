@@ -1,0 +1,25 @@
+.searchbar{
+    height: 45px;
+    box-sizing: border-box;
+     -webkit-box-sizing:border-box;
+     -moz-box-sizing: border-box;
+    width: 700px;
+}
+
+.btn-search{
+    padding: 12px 50px;
+    margin-left: 20px;
+}
+
+@media screen and (max-width: 960px) {
+    .searchbar{
+        width: 100%;
+        display: flex;
+    }
+    .btn-search{
+        padding: 12px 26px;
+        width: 100%;
+        margin-top: 10px;
+        margin-left: 0px;
+    }
+}
