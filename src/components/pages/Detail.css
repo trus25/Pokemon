@@ -1,0 +1,116 @@
+.detail-container{
+    box-shadow: 0px 0px 15px -5px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 40px 40px
+}
+
+.detail-image{
+    text-align: center;
+}
+.detail-image img{
+    width: 200px;
+    height: 200px;
+}
+.detail-body{
+    margin-top: 30px;
+}
+
+.status-bar {
+    width: 100%;
+    padding: 4px;
+    background: rgb(231, 226, 226);
+    border-radius: 20px;
+    position: relative;
+}
+.bar {
+    font-size: 10px;
+    color: #fff;
+    border-radius: 20px;
+    padding: 3px 0px 3px 0px;
+}
+.health{
+    background: rgb(221, 52, 25);
+}
+.attack{
+    background: rgb(255, 166, 0);
+}
+.defense{
+    background: rgb(25, 221, 81);
+}
+.speed{
+    background: rgb(25, 130, 221);
+}
+
+.body-row{
+    margin-top:10px
+}
+
+.badge {
+    display: inline-block;
+    width: 80px; /* pixel unit */
+    padding: 5px 10px; /* pixel unit */
+    border-radius: 30%;
+    font-size: 14px;
+    text-align: center;
+    background: #1779ba;
+    color: #fefefe;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.badge-normal{
+    background: #A8A77A;
+}
+.badge-fire{
+    background: #EE8130;
+}
+.badge-water{
+    background: #6390F0;
+}
+.badge-electric{
+    background: #F7D02C;
+}
+.badge-grass{
+    background: #7AC74C;
+}
+.badge-ice{
+    background: #96D9D6;
+}
+.badge-fighting{
+    background: #C22E28;
+}
+.badge-poison{
+    background: #A33EA1;
+}
+.badge-ground{
+    background: #E2BF65;
+}
+.badge-flying{
+    background: #A98FF3;
+}
+.badge-psychic{
+    background: #F95587;
+}
+.badge-bug{
+    background: #A6B91A;
+}
+.badge-rock{
+    background: #B6A136;
+}
+.badge-ghost{
+    background: #735797;
+}
+.badge-dragon{
+    background: #6F35FC;
+}
+.badge-dark{
+    background: #705746;
+}
+.badge-steel{
+    background: #B7B7CE;
+}
+.badge-fairy{
+    background: #D685AD;
+}
