@@ -13,7 +13,7 @@ function Routes() {
         <BrowserRouter>
             <Navbar />
             <Switch>                
-                <Route path="/pokemon/:id" component={Detail} />
+                <Route path="/pokemon/:name" component={Detail} />
                 <Route path="/pokemon" component={Pokemon} />
                 <Route path="/" component={Home} />
                 {/* <Route path="*" component={NotFound} /> */}

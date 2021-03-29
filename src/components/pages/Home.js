@@ -1,7 +1,6 @@
 import React, {useState, useEffect } from 'react'
 import { Row, Col } from 'react-simple-flex-grid'
 import './Home.css'
-import Search from '../external/Search.js'
 import { Card } from '../external/Card.js'
 import { Link } from 'react-router-dom'
 import Loading from '../external/Loading'
@@ -14,7 +13,6 @@ function Home() {
     const [items, setItems] = useState({});
 
     const [offset, setOffset] = useState(0);
-    const [data, setData] = useState([]);
     const [perPage] = useState(12);
     const [pageCount, setPageCount] = useState(0);
     const [mypokemon] = useState(()=> JSON.parse(localStorage.getItem("mypokemon")));
@@ -98,19 +96,21 @@ function Home() {
       const selectedPage = e.selected;
       setOffset(Math.ceil(selectedPage * perPage))
     };
-    console.log(items)
     return (
         <>
-            <Search />
+            {/* <Search /> */}
+            <div className="container container-center" style={{marginTop:'20px'}}>
+              <h1>POKEMON LIST</h1>
+            </div>
             <div className="container" style={{"marginTop": "20px"}}>
                 { isLoaded ? 
                     <>
                       <Row gutter={20}>
                         {items.data.pokemons.results.map((dt,index)=>(
                             <Col xs={6} lg={3} style={{"marginTop": "20px"}} key={index}>
-                                <Link to={`/pokemon/${dt.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Link to={`/pokemon/${dt.name}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <Card imageUrl={dt.image} title={dt.name.charAt(0).toUpperCase() + dt.name.slice(1)} type={dt.types[0].type.name} body={
-                                      <span>Owned: {}</span>
+                                      <span>Owned: { (mypokemon!==null && mypokemon.hasOwnProperty('data')) ? mypokemon.data.filter(x=>x.name===dt.name).length : 0}</span>
                                     }>
                                     </Card>
                                 </Link>

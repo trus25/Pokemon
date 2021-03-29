@@ -49,7 +49,7 @@ export const Card = ({
   body,
   type
 }) => {
-  const checkType = colours[type] ? colours[type] : 'none';
+  const checkType = colours[type] ? colours[type] : '';
   return (
     <div className="card-container" style={{ boxShadow: `0px 0px 15px -5px ${checkType}`}}>
         <div className="image-container">
