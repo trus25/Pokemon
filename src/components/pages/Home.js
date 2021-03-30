@@ -12,7 +12,7 @@ function Home() {
     const [items, setItems] = useState({});
 
     const [offset, setOffset] = useState(0);
-    const [perPage] = useState(12);
+    const perPage = 12;
     const [pageCount, setPageCount] = useState(0);
 
     useEffect(() => {

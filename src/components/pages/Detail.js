@@ -5,6 +5,7 @@ import { Button } from '../external/Button'
 import Loading from '../external/Loading'
 import ReactModal from 'react-modal'
 import DataTable from 'react-data-table-component'
+import { useParams } from 'react-router-dom'
 
 ReactModal.setAppElement('#root');
 function Detail(props) {
@@ -16,6 +17,7 @@ function Detail(props) {
     const [nickname, setNickname] = useState('');
     const [isExist, setIsExist] = useState(false);
     
+    const {name} = useParams();
     // const data = [{ id: 1, title: 'Conan the Barbarian', year: '1982' }];
     const columns = [
         {
@@ -122,7 +124,7 @@ function Detail(props) {
                 body: JSON.stringify({
                   query: detailQuery,
                   variables: {
-                    name:props.match.params.name
+                    name:name
                   },
                 }),
                 method: 'POST'
@@ -140,7 +142,8 @@ function Detail(props) {
           )
         };
         fetchPokemon();
-    },[]);
+    },[name]);
+    
     const handleCatch = () => {
         let success = Math.random(0,1);
         if(success>=0.5) setCaught(true);
