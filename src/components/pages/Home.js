@@ -10,7 +10,6 @@ function Home() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState({});
-    const [refresh, setRefresh] = useState(false);
 
     const [offset, setOffset] = useState(0);
     const [perPage] = useState(12);
@@ -35,7 +34,7 @@ function Home() {
           setError("NO POKEMON FOUND!");
         }
         setIsLoaded(true);
-    }, [offset, refresh])
+    }, [offset])
 
     const handlePageClick = (e) => {
       const selectedPage = e.selected;

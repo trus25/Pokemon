@@ -255,7 +255,7 @@ function Detail(props) {
                                 <Row className="body-row" style={{maxHeight:'600px'}}>
                                     <DataTable
                                         title="Moves"
-                                        striped="true"
+                                        striped
                                         columns={columns}
                                         customStyles={customStyles}
                                         noHeader
