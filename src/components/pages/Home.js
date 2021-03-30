@@ -43,7 +43,6 @@ function Home() {
     };
 
     const handleRelease = (index) => {
-      console.log(index)
       let mypokemon = JSON.parse(localStorage.getItem("mypokemon"));
       mypokemon.data.splice(index, 1);
       let newItem={
@@ -60,7 +59,7 @@ function Home() {
       }
       setItems(obj);
       setPageCount(Math.ceil(newItem.data.length / perPage));
-      if(newItem.data.length==0) setError("NO POKEMON FOUND!")
+      if(newItem.data.length===0) setError("NO POKEMON FOUND!")
     }
 
     return (
@@ -71,12 +70,12 @@ function Home() {
             </div>
             <div className="container" style={{"marginTop": "20px"}}>
                 { isLoaded ? (
-                    error==null ?
+                    error===null ?
                       <>
                       <Row gutter={20}>
                         {items.data.pokemons.results.map((dt,index)=>(
                             <Col xs={6} lg={3} style={{"marginTop": "20px"}} key={index}>
-                                <Card imageUrl={dt.image} title={dt.nickname=='' ? ' ' : dt.nickname} type={dt.types[0].type.name} body={
+                                <Card imageUrl={dt.image} title={dt.nickname==='' ? ' ' : dt.nickname} type={dt.types[0].type.name} body={
                                   <>
                                   <Row>
                                     <Col span={12} style={{marginTop:'15px'}}>

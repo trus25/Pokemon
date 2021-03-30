@@ -86,7 +86,7 @@ function Pokemon() {
             (error) => {
               console.log(error)
               setIsLoaded(true);
-              setError(error);
+              setError("NO POKEMON FOUND!");
             }
           )
         }
