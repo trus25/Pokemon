@@ -4,6 +4,8 @@ import { Row, Col } from 'react-simple-flex-grid'
 import { Button } from '../external/Button'
 import Loading from '../external/Loading'
 import ReactModal from 'react-modal'
+import DataTable from 'react-data-table-component'
+
 ReactModal.setAppElement('#root');
 function Detail(props) {
     const[detail, setDetail] = useState({})
@@ -14,6 +16,43 @@ function Detail(props) {
     const [nickname, setNickname] = useState('');
     const [isExist, setIsExist] = useState(false);
     
+    // const data = [{ id: 1, title: 'Conan the Barbarian', year: '1982' }];
+    const columns = [
+        {
+            name: 'Level',
+            selector: 'level',
+            sortable: true,
+        },
+        {
+            name: 'Move Name',
+            selector: 'move',
+            sortable: true,
+        },
+    ];
+
+    const customStyles = {
+        rows: {
+          style: {
+            minHeight: '30px', // override the row height
+          }
+        },
+        headCells: {
+          style: {
+            paddingLeft: '8px', // override the cell padding for head cells
+            paddingRight: '8px',
+            fontSize:'16px',
+            fontStyle:'bold'
+          },
+        },
+        cells: {
+          style: {
+            paddingLeft: '8px', // override the cell padding for data cells
+            paddingRight: '8px',
+            fontSize:'16px'
+          },
+        },
+      };
+
     const handleOpenModal = () => {
         setShowModal(true);
     }
@@ -214,30 +253,27 @@ function Detail(props) {
                                     <h2>Moves</h2>
                                 </Col>
                             </Row>
-                            
-                            <Row className="body-row" style={{marginBottom:'10px', marginTop:'10px'}}>
-                                <Col span={2}>
-                                    <b>Level</b>
-                                </Col>
-                                <Col span={10}>
-                                    <b>Move Name</b>
-                                </Col>
+                            <Row className="body-row" style={{maxHeight:'600px'}}>
+                                <DataTable
+                                    title="Moves"
+                                    striped="true"
+                                    columns={columns}
+                                    customStyles={customStyles}
+                                    noHeader
+                                    defaultSortField="level"
+                                    fixedHeader
+                                    overflowY
+                                    data={detail.moves.map(mv=>{
+                                        return {
+                                            level: mv.version_group_details[0].level_learned_at,
+                                            move: mv.move.name
+                                        }
+                                    })}
+                                />
                             </Row>
-                            {
-                                detail.moves.sort((a,b)=> a.version_group_details[0].level_learned_at - b.version_group_details[0].level_learned_at).map((mv,index)=>(
-                                    <Row key={`row-${index}`}>
-                                        <Col span={2}>
-                                            {mv.version_group_details[0].level_learned_at}
-                                        </Col>
-                                        <Col span={10}>
-                                            {mv.move.name}
-                                        </Col>
-                                    </Row>
-                                ))
-                            }
                             <Row gutter={5} className="body-row">
                                 <Col span={12}>
-                                    <Button buttonText="Catch" onClick={handleCatch} buttonStyle="btn--outline" buttonSize="btn--large" buttonColor="red" ></Button>
+                                    <Button buttonText="Catch" onClick={handleCatch} buttonStyle="btn--outline" buttonSize="btn--large" buttonColor="red" style={{width:'100%', marginTop:'20px'}}></Button>
                                 </Col>
                             </Row>
                             
