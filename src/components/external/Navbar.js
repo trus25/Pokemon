@@ -22,13 +22,12 @@ function Navbar() {
                 </div>
                 <ul className={navmenu ? 'nav-menu active' : 'nav-menu'}>
                     <li className='nav-item'>
-                        <Link to='/' className="nav-links">
+                        <Link to='/' onClick={e=>setNavmenu(!navmenu)} className="nav-links">
                             My Pokemon
                         </Link>
                     </li>
                     <li className='nav-item'>
-
-                        <Link to='/pokemon' className="nav-links">
+                        <Link to='/pokemon' onClick={e=>setNavmenu(!navmenu)} className="nav-links">
                             Pokemon List
                         </Link>
                     </li>
