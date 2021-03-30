@@ -18,7 +18,7 @@ function Home() {
     useEffect(() => {
         setIsLoaded(false);
         let mypokemon = JSON.parse(localStorage.getItem("mypokemon"));
-        if(mypokemon!==null || Array.isArray(mypokemon.data)){
+        if(mypokemon!==null){
           let obj = {
             data:{
               pokemons:{
