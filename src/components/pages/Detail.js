@@ -12,7 +12,8 @@ function Detail(props) {
     const [showModal, setShowModal] = useState(false);
     const [caught, setCaught] = useState(null);
     const [nickname, setNickname] = useState('');
-    const [mypokemon, setMypokemon] = useState(()=> JSON.parse(localStorage.getItem("mypokemon")));
+    const [isExist, setIsExist] = useState(false);
+    
     const handleOpenModal = () => {
         setShowModal(true);
     }
@@ -21,6 +22,15 @@ function Detail(props) {
         setShowModal(false);
     }
     useEffect (() => {
+        let mypokemon = JSON.parse(localStorage.getItem("mypokemon"));
+
+        if(mypokemon===null || !Array.isArray(mypokemon.data)){
+            mypokemon={
+                data:[]
+            }
+        }
+        localStorage.setItem("mypokemon", JSON.stringify(mypokemon));
+
         setIsLoaded(false);
         const detailQuery =  `query pokemon($name: String!) {
             pokemon(name: $name) {
@@ -29,6 +39,23 @@ function Detail(props) {
               abilities {
                 ability {
                   name
+                }
+              }
+              moves{
+                move{
+                  url
+                  name
+                }
+                version_group_details{
+                  level_learned_at
+                  move_learn_method{
+                    url
+                    name
+                  }
+                  version_group{
+                    url
+                    name
+                  }
                 }
               }
               types {
@@ -75,29 +102,42 @@ function Detail(props) {
         fetchPokemon();
     },[]);
 
-    useEffect (() => {
-        localStorage.setItem("mypokemon", JSON.stringify(mypokemon))
-        console.log(JSON.parse(localStorage.getItem("mypokemon")));
-    },[mypokemon])
-
     const handleCatch = () => {
-        let success = Math.random();
+        let success = Math.random(0,1);
         console.log(success);
         if(success>=0.5) setCaught(true);
         else setCaught(false);
         handleOpenModal();
     }
+
     const onInputChange = (e) => {
+        let mypokemon = JSON.parse(localStorage.getItem("mypokemon"));
+        if(mypokemon.data.find(x=>x.nickname===e.target.value && x.name===detail.name)){
+            setIsExist(true);
+        }else{
+            setIsExist(false);
+        }
         setNickname(e.target.value);
     }
 
     const handleSave = () => {
-        setMypokemon(prevState =>({
-            ...prevState,
-            data: []
-        }))
-        localStorage.clear();
+        if(isExist) return;
+        let mypokemon = JSON.parse(localStorage.getItem("mypokemon"));
+        console.log(mypokemon);
+        let newdata = {
+            id: detail.id,
+            name: detail.name,
+            image: detail.sprites.front_default,
+            types: detail.types,
+            nickname: nickname
+        }
+        mypokemon.data.push(newdata);
+        localStorage.setItem("mypokemon", JSON.stringify(mypokemon))
+        setNickname('');
+        handleCloseModal();
+        props.history.push('/');
     }
+    console.log(detail)
     return (
         <div className="container" style={{marginTop:'5%', textAlign:'center', padding:'20px'}}>
             {
@@ -118,12 +158,10 @@ function Detail(props) {
                                     ))}
                                 </Col>
                             </Row>
-                            <Row className="body-row">
-                                <Col span={12}>
-                                    <span>Base Stats</span>
-                                </Col>
-                            </Row>
                             <Row gutter={5} className="body-row">
+                                <Col span={12} style={{marginBottom:'20px'}}>
+                                    <h2>Base Stats</h2>
+                                </Col>
                                 <Col span={2}>
                                     HP
                                 </Col>
@@ -171,11 +209,38 @@ function Detail(props) {
                                     </div>
                                 </Col>
                             </Row>
-                            <Row gutter={5} className="body-row">
-                                <Col span={12}>
-                                    <Button buttonText="Catch" onClick={handleCatch} buttonStyle="btn--outline" buttonSize="btn-wide" buttonColor="red" ></Button>
+                            <Row className="body-row">
+                                <Col span={12} style={{marginBottom:'10px', marginTop:'10px'}}>
+                                    <h2>Moves</h2>
                                 </Col>
                             </Row>
+                            
+                            <Row className="body-row" style={{marginBottom:'10px', marginTop:'10px'}}>
+                                <Col span={2}>
+                                    <b>Level</b>
+                                </Col>
+                                <Col span={10}>
+                                    <b>Move Name</b>
+                                </Col>
+                            </Row>
+                            {
+                                detail.moves.sort((a,b)=> a.version_group_details[0].level_learned_at - b.version_group_details[0].level_learned_at).map((mv,index)=>(
+                                    <Row key={`row-${index}`}>
+                                        <Col span={2}>
+                                            {mv.version_group_details[0].level_learned_at}
+                                        </Col>
+                                        <Col span={10}>
+                                            {mv.move.name}
+                                        </Col>
+                                    </Row>
+                                ))
+                            }
+                            <Row gutter={5} className="body-row">
+                                <Col span={12}>
+                                    <Button buttonText="Catch" onClick={handleCatch} buttonStyle="btn--outline" buttonSize="btn--large" buttonColor="red" ></Button>
+                                </Col>
+                            </Row>
+                            
                         </div>  
                     </div>
                     
@@ -184,14 +249,15 @@ function Detail(props) {
                                 contentLabel="Minimal Modal Example"
                                 style={{
                                     content : {
-                                        top                   : '50%',
-                                        left                  : '50%',
-                                        right                 : 'auto',
-                                        bottom                : 'auto',
-                                        marginRight           : '-50%',
-                                        transform             : 'translate(-50%, -50%)',
-                                        minWidth                : '300px',
-                                        maxWidth                 : '350px'
+                                        top : '50%',
+                                        left : '50%',
+                                        right : 'auto',
+                                        bottom : 'auto',
+                                        marginRight : '-50%',
+                                        transform : 'translate(-50%, -50%)',
+                                        minWidth : '300px',
+                                        maxWidth : '350px',
+                                        backgroundColor : '#fcfcfc'
                                       }
                                     }
                                 }   
@@ -202,23 +268,44 @@ function Detail(props) {
                                         <h3 style={{textAlign:'center'}}>{caught ? `You have caught ${detail.name.charAt(0).toUpperCase() + detail.name.slice(1)}`:''}</h3>
                                     </Col>
                                 </Row>
-                                {
-                                    caught ?
-
-                                   <Row style={{
-                                    marginTop:'20px'
-                                    }}>   
-                                        <Col span={4} style={{
-                                            paddingTop:'5px'
-                                        }}>
-                                            <label>Nickname:</label>
-                                        </Col>
-                                        <Col span={8}>
-                                            <input name="nickname" type="text" placeholder="Give Nickname" onChange={onInputChange} value={nickname} style={{width:'100%', height:'30px', border:'thin solid'}}></input>
-                                        </Col>
-                                    </Row> 
-                                    :
-                                    ''
+                                {   caught &&
+                                    ( 
+                                        <Row style={{
+                                        marginTop:'20px'
+                                        }}>   
+                                            <Col span={4} style={{
+                                                paddingTop:'5px'
+                                            }}>
+                                                <label>Nickname:</label>
+                                            </Col>
+                                            <Col span={8}>
+                                                <input 
+                                                    name="nickname" 
+                                                    type="text" 
+                                                    placeholder="Give Nickname" 
+                                                    onChange={onInputChange} 
+                                                    value={nickname} 
+                                                    style={
+                                                        {
+                                                            width:'100%',
+                                                            height:'30px', 
+                                                            border:'thin solid', 
+                                                            padding: '0 5px 0 5px'
+                                                        }
+                                                    }
+                                                />
+                                            </Col>
+                                            {
+                                                isExist && (
+                                                    <Col span={12} style={{
+                                                        paddingTop:'5px'
+                                                    }}>
+                                                        <span className="badge-alert">Nickname already used by other Pokemon</span>
+                                                    </Col>
+                                                )
+                                            }
+                                        </Row>
+                                    )
                                 }
                                 
                                 <Row style={{
@@ -227,8 +314,10 @@ function Detail(props) {
                                     <Col span={12} style={{
                                         textAlign:'right'
                                     }}>
-                                        <Button buttonText="Close" onClick={handleCloseModal} buttonStyle="btn--outline" buttonSize="btn-medium" style={{ marginRight: '5px'}}></Button>
-                                        <Button buttonText="Save" onClick={handleSave} buttonStyle="btn--outline" buttonSize="btn-medium" buttonColor="blue" ></Button>
+                                        <Button buttonText="Close" onClick={handleCloseModal} buttonStyle="btn--outline" buttonSize="btn--medium" style={{ marginRight: '5px'}}></Button>
+                                        {
+                                            caught && (<Button buttonText="Save" onClick={handleSave} buttonStyle="btn--outline" buttonSize="btn--medium" buttonColor="blue" ></Button>)
+                                        }
                                     </Col>
                                 </Row>
                     </ReactModal>

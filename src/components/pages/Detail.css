@@ -3,7 +3,7 @@
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
-    padding: 40px 40px
+    padding: 40px 40px;
 }
 
 .detail-image{
@@ -58,6 +58,17 @@
     color: #fefefe;
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.badge-alert {
+    display: inline-block;
+    padding: 5px 10px; /* pixel unit */
+    width: 100%;
+    font-size: 14px;
+    text-align: center;
+    background: #ee323e;
+    color: #fefefe;
+    padding-top: 10px;
 }
 
 .badge-normal{
